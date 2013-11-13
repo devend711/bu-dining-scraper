@@ -23,22 +23,7 @@ class Scraper
 
   def getItems
     page = Nokogiri::HTML(open(@menu_url))
-    #meals_list = page.css('div.mealgroup')
-    #puts meals_list
-    time = Time.new
-    currHour = time.hour
-    if currHour > 3 and  currHour < 11 #breakfast
-    	item_list = page.css('div.breakfast ul.items span.item-menu-name')
-    	puts ('breakfast time')
-    end
-    if currHour > 11 and  currHour < 17  #breakfast
-    	item_list = page.css('div.lunch ul.items span.item-menu-name')
-    	puts ('lunch time')
-    end
-    if currHour > 17 and  currHour < 3 #breakfast
-    	item_list = page.css('div.dinner ul.items span.item-menu-name')
-    	puts ('dinner time')
-    end
+    item_list = page.css('span.item-menu-name')
     item_list.each do |item|
       @items << item.content
     end
@@ -122,4 +107,4 @@ end
 west = Scraper.new("/the-fresh-food-co-at-west-campus/menu/")
 #west.calcScore()
 #puts west.baditems
-puts west.getItems.inspect
+puts west.getItems
