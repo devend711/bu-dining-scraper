@@ -26,8 +26,27 @@ class Scraper
   #maelgroups, specials, insidecontainer, soup-station, items, item, "", span,span
   def getItems
     page = Nokogiri::HTML(open(@menu_url))
+<<<<<<< HEAD:bu-dining-scraper/Scraper.rb
     #comb through unhidden menu to find menu item names
     item_list = page.css("span.item-menu-name")
+=======
+    #meals_list = page.css('div.mealgroup')
+    #puts meals_list
+    time = Time.new
+    currHour = time.hour
+    if currHour > 3 and  currHour < 11 #breakfast
+    	item_list = page.css('div.breakfast ul.items span.item-menu-name')
+    	puts ('breakfast time')
+    end
+    if currHour > 11 and  currHour < 17  #breakfast
+    	item_list = page.css('div.lunch ul.items span.item-menu-name')
+    	puts ('lunch time')
+    end
+    if currHour > 17 and  currHour < 3 #breakfast
+    	item_list = page.css('div.dinner ul.items span.item-menu-name')
+    	puts ('dinner time')
+    end
+>>>>>>> cb011e2c6045835c0da800c215412a15149d662c:bu-dining-scraper/Scraper_kanav.rb
     item_list.each do |item|
       @items << item.content
     end
@@ -36,6 +55,7 @@ class Scraper
 
   def calcScore
     getItems
+    #checks if each item from 'favorites list' is in the each item name
     File.readlines('favorites.list').each do |goodword|
       @items.each do |item|
         if item.downcase.include?(goodword.downcase)
@@ -44,6 +64,7 @@ class Scraper
         end
       end
     end
+    #checks if each item from 'dislikes list' is in the each item name
     File.readlines('dislikes.list').each do |badword|
       @items.each do |item|
         if item.downcase.include?(badword.downcase)
@@ -107,5 +128,11 @@ class Scraper
 end
 
 west = Scraper.new("/the-fresh-food-co-at-west-campus/menu/")
+<<<<<<< HEAD:bu-dining-scraper/Scraper.rb
 west.getItems
 puts west.items
+=======
+#west.calcScore()
+#puts west.baditems
+puts west.getItems.inspect
+>>>>>>> cb011e2c6045835c0da800c215412a15149d662c:bu-dining-scraper/Scraper_kanav.rb
