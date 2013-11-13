@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'erb'
 require 'nokogiri'
 require 'open-uri'
 
@@ -9,7 +10,10 @@ WARREN_URL = "#{BASE_URL}/warren-towers/menu/"
 =end
 
 class Scraper
-  attr_accessor :goodscore, :gooditems, :badscore, :baditems
+  
+  include ERB::Util
+  
+  attr_accessor :goodscore, :gooditems, :badscore, :baditems, :items
   @@BASE_URL = "http://www.bu.edu/dining/where-to-eat/residence-dining"
   def initialize(menu_url)
     @menu_url = "#{@@BASE_URL}#{menu_url}"
@@ -23,7 +27,7 @@ class Scraper
 
   def getItems
     page = Nokogiri::HTML(open(@menu_url))
-    item_list = page.css('span.item-menu-name')
+    item_list = page.css("div.mealgroup:not([style$=none]) span.item-menu-name")
     item_list.each do |item|
       @items << item.content
     end
@@ -55,13 +59,12 @@ class Scraper
   end
 
   def scoreERB
-    calcScore
     %{
      <h1><%= @menu_url %></h1>
      <br />
      <div>good matches:  <%= @goodscore %></div>
-     <div>bad matches: <%= @badscore $></div>
-     <div><h1>total score: <%= @goodscore + @badscore %></h1></div>
+     <div>bad matches: <%= @badscore %></div>
+     <div><h1>total score: <%= @goodscore - @badscore %></h1></div>
    }
   end
 
@@ -101,10 +104,43 @@ class Scraper
      </ul>
    }
   end
+  
+  def getTemplate
+    %{
+    <DOCTYPE html  "-//W3C//DTD  1.0 //EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+          <link href="style.css" rel="stylesheet" type="text/css">
+          <title>What's for Dinner?</title>
+        </head>
+        <body>
+      <h1><%= @menu_url %></h1>
+           <br />
+           <div>good matches:  <%= @goodscore %></div>
+           <div>bad matches: <%= @badscore %></div>
+           <div><h1>total score: <%= @goodscore - @badscore %></h1></div>
+         </body>
+        </html>
+    }
+  end
+  
+  def renderPage
+    ERB.new(getTemplate).result(binding) #template comes from parent
+  end
+  
+  def makePage
+    File.open("menu.html", "w+") do |f|
+      f.write(renderPage)
+    end 
+  end
 
 end
 
 west = Scraper.new("/the-fresh-food-co-at-west-campus/menu/")
 #west.calcScore()
 #puts west.baditems
-puts west.getItems
+west.calcScore()
+west.makePage()
