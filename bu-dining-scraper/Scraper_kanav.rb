@@ -9,7 +9,7 @@ WARREN_URL = "#{BASE_URL}/warren-towers/menu/"
 =end
 
 class Scraper
-  attr_accessor :goodscore, :gooditems, :badscore, :baditems, :items
+  attr_accessor :goodscore, :gooditems, :badscore, :baditems
   @@BASE_URL = "http://www.bu.edu/dining/where-to-eat/residence-dining"
   def initialize(menu_url)
     @menu_url = "#{@@BASE_URL}#{menu_url}"
@@ -21,15 +21,8 @@ class Scraper
     @meals_hash = Hash.new
   end
 
-  
-  
-  #maelgroups, specials, insidecontainer, soup-station, items, item, "", span,span
   def getItems
     page = Nokogiri::HTML(open(@menu_url))
-<<<<<<< HEAD:bu-dining-scraper/Scraper.rb
-    #comb through unhidden menu to find menu item names
-    item_list = page.css("span.item-menu-name")
-=======
     #meals_list = page.css('div.mealgroup')
     #puts meals_list
     time = Time.new
@@ -46,7 +39,6 @@ class Scraper
     	item_list = page.css('div.dinner ul.items span.item-menu-name')
     	puts ('dinner time')
     end
->>>>>>> cb011e2c6045835c0da800c215412a15149d662c:bu-dining-scraper/Scraper_kanav.rb
     item_list.each do |item|
       @items << item.content
     end
@@ -128,11 +120,6 @@ class Scraper
 end
 
 west = Scraper.new("/the-fresh-food-co-at-west-campus/menu/")
-<<<<<<< HEAD:bu-dining-scraper/Scraper.rb
-west.getItems
-puts west.items
-=======
 #west.calcScore()
 #puts west.baditems
 puts west.getItems.inspect
->>>>>>> cb011e2c6045835c0da800c215412a15149d662c:bu-dining-scraper/Scraper_kanav.rb
