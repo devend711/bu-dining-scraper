@@ -93,7 +93,6 @@ class Scraper
   end
 
   def allMealsERB
-    getItems
     %{
      <h1>All Menu Items</h1>
      <br />
@@ -117,11 +116,19 @@ class Scraper
           <title>What's for Dinner?</title>
         </head>
         <body>
-      <h1><%= @menu_url %></h1>
-           <br />
-           <div>good matches:  <%= @goodscore %></div>
-           <div>bad matches: <%= @badscore %></div>
-           <div><h1>total score: <%= @goodscore - @badscore %></h1></div>
+       <h1><%= @menu_url %></h1>
+       <br />
+       <div>good matches:  <%= @goodscore %></div>
+       <div>bad matches: <%= @badscore %></div>
+       <div><h1>total score: <%= @goodscore - @badscore %></h1></div>
+       <h1>All Menu Items</h1>
+       <br />
+       <ul>
+       <% @items.each do |item| %>
+        <li><%= item %></li>
+       <% end %>
+       </ul>
+     
          </body>
         </html>
     }
@@ -132,6 +139,8 @@ class Scraper
   end
   
   def makePage
+    calcScore
+    getItems
     File.open("menu.html", "w+") do |f|
       f.write(renderPage)
     end 
@@ -140,7 +149,5 @@ class Scraper
 end
 
 west = Scraper.new("/the-fresh-food-co-at-west-campus/menu/")
-#west.calcScore()
-#puts west.baditems
 west.calcScore()
 west.makePage()
